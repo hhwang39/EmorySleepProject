@@ -1,0 +1,61 @@
+sudo apt-get update
+raspi-config localizaztion -> change timezone-> US-> eastern
+sudo apt-get -y upgrade
+reboot
+apt-get install -y python3-pip
+
+
+apt-get install build-essential libssl-dev libffi-dev python-dev
+
+apt-get install libglib2.0-dev
+apt-get install libbluetooth-dev
+apt-get install libboost-python-dev
+apt-get install libboost-all-dev
+
+DEPENDS
+--------------
+pkg-config
+libboost-python-dev
+libboost-thread-dev
+libbluetooth-dev >= 4.101
+libglib2.0-dev
+python-dev
+
+mkdir /home/pi/mbientlab
+cd /home/pi/mbientlab
+
+git clone https://github.com/mbientlab/pygattlib/
+cd pygattlib/
+make
+if fail copy from stagecd
+ cd src
+  touch *
+  cd bluez
+  touch *
+cd ../..
+
+pip install .
+
+git clone https://github.com/mbientlab/MetaWear-SDK-Python
+cd MetaWear-SDK-Python
+pip install .
+cd examples
+python scan_connect.py
+
+apt-get install sqlite
+apt-get install sqlitebrowser
+
+cp Test1 directory using scp
+
+
+http://awc.com.my/uploadnew/5ffbd639c5e6eccea359cb1453a02bed_Setting%20Up%20Cron%20Job%20Using%20crontab.pdf
+
+NO USED
+-----------
+pip3 download gattlib
+tar xvzf ./gattlib-0.20150805.tar.gz
+cd gattlib-0.20150805/
+sed -ie 's/boost_python-py34/boost_python-py35/' setup.py
+pip3 install .
+pip3 install metawear --process-dependency-links
+pip3 install gattlib
