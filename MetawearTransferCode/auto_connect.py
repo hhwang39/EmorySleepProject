@@ -7,6 +7,7 @@ import time
 selection = False
 devices = None
 
+#keeps trying to check for devices with MetaWear
 while not selection:
     service = DiscoveryService("hci0")
     devices = service.discover(2)
@@ -29,6 +30,7 @@ print("Connecting to %s..." % (mw_addr))
 device = MetaWear(mw_addr)
 time.sleep(5.0)
 
+#keeps trying to connect, main purpose is to catch errors while connecting
 flag = False
 while not flag:
     try:
@@ -40,7 +42,7 @@ while not flag:
     except Exception as e:
         time.sleep(1.0)
         print(e)
-                    
+
 # grab the first scanned device
 #address = devices.items()[0][0]
 #address = "F6:0D:1B:10:04:FC"
@@ -61,6 +63,7 @@ sleep(1.0)
 model_name = cast(raw, c_char_p).value.decode("ascii")
 print("model="+model_name)
 
+#after some seconds it disconnects
 time.sleep(30.0)
 print("Disconnecting")
 device.disconnect()
