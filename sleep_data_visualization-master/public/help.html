@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Emory Sleep Monitoring</title>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/index.html">Graph</a>
+    <a href="/uploads.html">Upload</a>
+    <a href="/help.html">Help</a>
+  </div>
+
+  <!-- Use any element to open the sidenav -->
+  <span onclick="openNav()"></span>
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+
+  <p>
+    This is the help page.
+  </p>
+  <a href='http://ece4012y2017.ece.gatech.edu/spring/sd17sWS1/'>Click here for project website.</a>
+</body>
+
+<script type="text/javascript">
+  function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+  }
+
+  function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+  }
+</script>
+
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "sleep_data_visualization",
+  "version": "1.0.0",
+  "description": "A simple GUI to visualize accelerometer data taken during sleep",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "csv": "^2.0.0",
+    "csv-parse": "^2.0.0",
+    "express": "^4.16.2",
+    "formidable": "^1.1.1",
+    "fs": "^0.0.1-security",
+    "promise": "^8.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jagrusy/sleep_data_visualization.git"
+  },
+  "author": "Alan Grusy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jagrusy/sleep_data_visualization/issues"
+  },
+  "homepage": "https://github.com/jagrusy/sleep_data_visualization#readme"
+}

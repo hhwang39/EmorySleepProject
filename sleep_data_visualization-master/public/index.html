@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Emory Sleep Monitoring</title>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script type="text/javascript" src="./slider_chart.js"></script>
+</head>
+
+<body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/index.html">Graph</a>
+    <a href="/uploads.html">Upload</a>
+    <a href="/help.html">Help</a>
+  </div>
+
+  <!-- Use any element to open the sidenav -->
+  <span onclick="openNav()"></span>
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+
+  <div id="dashboard_div">
+    Window Size<br/>
+    <input id="fiveSec" type="button" value="5 Seconds" />
+    <input id="tenSec" type="button" value="10 Seconds" />
+    <input id="oneMin" type="button" value="1 Minute" />
+    <input id="myClickHandler" type="button" value="Select" />
+    <input type="button" value="Export CSV" onclick="exportCSV();">
+
+    <div id="chart_div"></div>
+    <div id="control_div"></div>
+  </div>
+</body>
+
+<script type="text/javascript">
+  function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+  }
+
+  function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+  }
+</script>
+
+</html>
