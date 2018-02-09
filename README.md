@@ -2,11 +2,14 @@ EmorySleepProject
 ===========
 Develop a small portable device and GUI for Patients with Periodic Limb Movement 
 ## Content Outline
-- [**Installation Guide**](#installation guide)
+- [**Installation Guide**](#installation-guide)
+- [**LED Indictor Status Message**](#led-indictor-of-raspberry-pi)
+- [**USB**](#usb)
+- [**Interaction with Reciever Module **](#non-automatic-interaction-with-reciver-module-(raspberry-pi))
 
 Installation Guide
 ------------------
-
+Not written yet
 ## LED Indictor of Raspberry Pi
 RED: Failure to connect \
 BLUE: In process of connecting/reconnecting\
