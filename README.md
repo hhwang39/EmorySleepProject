@@ -5,7 +5,7 @@ Develop a small portable device and GUI for Patients with Periodic Limb Movement
 - [**Installation Guide**](#installation-guide)
 - [**LED Indictor Status Message**](#led-indictor-of-raspberry-pi)
 - [**USB**](#usb)
-- [**Interaction with Reciever Module **](#non-automatic-interaction-with-reciver-module-(raspberry-pi))
+- [**Interaction with Reciever Module **](#interaction-with-reciver-module-(raspberry-pi))
 
 Installation Guide
 ------------------
@@ -30,6 +30,6 @@ When USB is plugged to the raspberry pi there are two cases that can happen
 1) LED turns blue indicating that the Receiver Module is in the process of copying
 2) Since there is nothing to copy, LED will be off
 
-## Non-Automatic Interaction with Reciver Module (Raspberry Pi)
+## Interaction with Reciver Module (Raspberry Pi)
 In order to see what is going on with Reciever Module. You have few ways to check
 ### Windows
