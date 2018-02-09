@@ -1,0 +1,10 @@
+[Unit]
+Description=My flashdrive script trigger
+Requires=media-pi-EMORYSLP.mount
+After=media-pi-EMORYSLP.mount
+
+[Service]
+ExecStart=/home/pi/mbientlab/Project/Test1/mount_mbient.sh
+
+[Install]
+WantedBy=media-pi-EMORYSLP.mount
