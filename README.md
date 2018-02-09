@@ -43,6 +43,9 @@ In order to see what is going on with Receiver Module. You have few ways to conn
 * [***Putty***](https://www.putty.org/)
 ### Ubuntu
 * [***ssh***](https://www.ssh.com/ssh/command/)
+```
+ssh pi@(ip of raspberry pi)
+```
 
 ## Troubleshooting
 Within the /home/pi/mbientlab/Project/Test1/ directory a log file named excep.log exists which contains the entire piped output of the python program including any errors that might have occured.
