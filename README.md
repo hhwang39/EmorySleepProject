@@ -5,8 +5,9 @@ Develop a small portable device and GUI for Patients with Periodic Limb Movement
 - [**Installation Guide**](#installation-guide)
 - [**LED Indicator Status Message**](#led-indicator-of-raspberry-pi)
 - [**USB**](#usb)
-- [**Interaction with Receiver Module **](#interaction-with-receiver-module-(raspberry-pi))
--- [**Windows**] (#windows)
+- [**Interaction with Receiver Module**](#nonautomatic-interaction-with-receiver-module-raspberry-pi)
+  * [**Windows**] (#windows)
+  * [**Ubuntu (Linux)**] (#ubuntu)
 
 Installation Guide
 ------------------
@@ -32,5 +33,8 @@ When a USB drive is plugged to the Raspberry Pi, there are two cases that can ha
 2) Since there is nothing to copy, the LED will be off
 
 ## Non-Automatic Interaction with Receiver Module (Raspberry Pi)
-In order to see what is going on with Receiver Module. You have few ways to check
+In order to see what is going on with Receiver Module. You have few ways to connect to Reciever Module
 ### Windows
+* [***Putty***](https://www.putty.org/)
+### Ubuntu
+* [***ssh***](https://www.ssh.com/ssh/command/)
