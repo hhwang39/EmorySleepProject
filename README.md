@@ -6,6 +6,7 @@ Develop a small portable device and GUI for Patients with Periodic Limb Movement
 - [**LED Indictor Status Message**](#led-indicator-of-raspberry-pi)
 - [**USB**](#usb)
 - [**Interaction with Reciever Module **](#non-automatic-interaction-with-receiver-module-(raspberry-pi))
+- [** Windows **] (#windows)
 
 Installation Guide
 ------------------
