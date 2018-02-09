@@ -38,7 +38,7 @@ data1.csv - the same data as data1.db in a csv format\
 2) Since there is nothing to copy, the LED will be off
 
 ## Non-Automatic Interaction with Receiver Module (Raspberry Pi)
-In order to see what is going on with Receiver Module. You have few ways to connect to Reciever Module
+There are a number of ways to interface with the Receiver Module (RPi) directly. The easiest way is to connect a monitor to the RPi and thus directly display the contents through the use of an HDMI cable. This method however requires a keyboard and mouse. The alternative option is to SSH into the RPi using either the terminal or a program (Putty) only after knowing the IP address of the RPi.
 ### Windows
 * [***Putty***](https://www.putty.org/)
 ### Ubuntu
