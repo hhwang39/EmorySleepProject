@@ -52,8 +52,14 @@ class MyNavigationToolbar(NavigationToolbar):
     def hello(self):
         print("Hello")
     def importDB(self):
-        path = QtWidgets.QFileDialog.getOpenFileName("Dialog")
-        print(path)
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                            "Choose Your DB",
+                                                            "",
+                                                            "All Files (*);;Python Files (*.py)",
+                                                            options=options)
+        print(fileName)
     def exportCSV(self):
         print("nono")
         stacked = np.array([1, 2, 3, 4, 5, 6, 7])
