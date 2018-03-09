@@ -14,7 +14,7 @@ import sys
 import os
 import random
 import matplotlib
-from tkinter import filedialog
+from ece4012 import ECE4012
 matplotlib.use('Qt5Agg')
 # Make sure that we are using QT5
 from PyQt5 import QtCore, QtWidgets
@@ -28,11 +28,12 @@ progname = os.path.basename(sys.argv[0])
 progversion = "0.1"
 
 class MyNavigationToolbar(NavigationToolbar):
-    def __init__(self, canvas, parent):
+    def __init__(self, canvas, parent, fig):
         # self.canvas = canvas
         # self.parent = parent
         # C:\Python36\Lib\site-packages\matplotlib\mpl-data\images is the directory
         # you want to put image as (name)_large.png. it should be 48 x 48.
+        self.fig = fig
         self.toolitems = (
             ("ImportDB", "Import DB file", "import", "importDB"),
             ('Home', 'Reset original view', 'home', 'home'),
@@ -49,33 +50,39 @@ class MyNavigationToolbar(NavigationToolbar):
             ("Export", "Export DB to CSV", "export", "exportCSV")
         )
         NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
+
     def hello(self):
         print("Hello")
+
     def importDB(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                             "Choose Your DB",
                                                             "",
-                                                            "All Files (*);;Python Files (*.py)",
+                                                            "All Files (*);;Database Files (*.db)",
                                                             options=options)
-        print(fileName)
+        # print(fileName)
+        if fileName is not None:
+            # print("mmm")
+            self.ece = ECE4012(self.fig, fileName)
+            self.ece.run()
     def exportCSV(self):
         print("nono")
-        stacked = np.array([1, 2, 3, 4, 5, 6, 7])
-        np.savetxt("foo.csv", stacked, delimiter=",")
+
+        # np.savetxt("foo.csv", self.ece., delimiter=",")
 
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
 
         self.compute_initial_figure()
 
-        FigureCanvas.__init__(self, fig)
+        FigureCanvas.__init__(self, self.fig)
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
@@ -91,30 +98,31 @@ class MyStaticMplCanvas(MyMplCanvas):
     """Simple canvas with a sine plot."""
 
     def compute_initial_figure(self):
-        t = arange(0.0, 3.0, 0.01)
-        s = sin(2*pi*t)
-        self.axes.plot(t, s)
+        pass
+        # t = arange(0.0, 3.0, 0.01)
+        # s = sin(2*pi*t)
+        # self.axes.plot(t, s)
 
 
-class MyDynamicMplCanvas(MyMplCanvas):
-    """A canvas that updates itself every second with a new plot."""
-
-    def __init__(self, *args, **kwargs):
-        MyMplCanvas.__init__(self, *args, **kwargs)
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.update_figure)
-        timer.start(1000)
-
-    def compute_initial_figure(self):
-        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
-
-    def update_figure(self):
-        # Build a list of 4 random integers between 0 and 10 (both inclusive)
-        l = [random.randint(0, 10) for i in range(4)]
-        self.axes.cla()
-        self.axes.plot([0, 1, 2, 3], l, 'r')
-        self.draw()
-
+# class MyDynamicMplCanvas(MyMplCanvas):
+#     """A canvas that updates itself every second with a new plot."""
+#
+#     def __init__(self, *args, **kwargs):
+#         MyMplCanvas.__init__(self, *args, **kwargs)
+#         timer = QtCore.QTimer(self)
+#         timer.timeout.connect(self.update_figure)
+#         timer.start(1000)
+#
+#     def compute_initial_figure(self):
+#         self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+#
+#     def update_figure(self):
+#         # Build a list of 4 random integers between 0 and 10 (both inclusive)
+#         l = [random.randint(0, 10) for i in range(4)]
+#         self.axes.cla()
+#         self.axes.plot([0, 1, 2, 3], l, 'r')
+#         self.draw()
+#
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -122,25 +130,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
 
-        self.file_menu = QtWidgets.QMenu('&File', self)
-        self.file_menu.addAction('&Quit', self.fileQuit,
-                                 QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
-        self.menuBar().addMenu(self.file_menu)
-
-        self.help_menu = QtWidgets.QMenu('&Help', self)
-        self.menuBar().addSeparator()
-        self.menuBar().addMenu(self.help_menu)
-        # self.canvas = MyMplCanvas()
-        self.help_menu.addAction('&About', self.about)
+        # self.file_menu = QtWidgets.QMenu('&File', self)
+        # self.file_menu.addAction('&Quit', self.fileQuit,
+        #                          QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
+        # self.menuBar().addMenu(self.file_menu)
+        #
+        # self.help_menu = QtWidgets.QMenu('&Help', self)
+        # self.menuBar().addSeparator()
+        # self.menuBar().addMenu(self.help_menu)
+        # # self.canvas = MyMplCanvas()
+        # self.help_menu.addAction('&About', self.about)
 
         self.main_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.main_widget)
-        sc = MyStaticMplCanvas(self.main_widget, width=5, height=4, dpi=100)
-        dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
+        sc = MyStaticMplCanvas(self.main_widget, width=20, height=10, dpi=100)
+        # dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
         l.addWidget(sc)
-        l.addWidget(dc)
-        self.nav = MyNavigationToolbar(sc, self.main_widget)
+        # l.addWidget(dc)
+        self.nav = MyNavigationToolbar(sc, self.main_widget, sc.fig)
         l.addWidget(self.nav)
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
