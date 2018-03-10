@@ -29,16 +29,17 @@ class ECE4012:
         df["valuez"] = np.subtract(df["valuez"], avgZ)
         df["mag"] = np.sqrt(df["valuex"] * df["valuex"] + df['valuey'] * df['valuey'] + \
                             df["valuez"] * df["valuez"])
-        self.ax = self.fig.add_subplot(2, 1, 1)
-        self.ax2 = self.fig.add_subplot(2, 1, 2)
-        self.ax.plot(df["epoch"], df["mag"], picker=True)
+        self.df = df
+        self.ax = self.fig.add_subplot(1, 1, 1)
+        # self.ax2 = self.fig.add_subplot(2, 1, 2)
+        self.ax.plot(df["epoch"], df["mag"])
         # self.ax.title("Magnitude")
-        self.ax2.plot(df["epoch"], df["valuex"],
-                      color=self.colorChoose(255, 0, 255))
-        self.ax2.plot(df["epoch"], df["valuey"],
-                      color=self.colorChoose(255, 0, 0))
-        self.ax2.plot(df["epoch"], df["valuez"],
-                      color=self.colorChoose(255, 255, 0))
+        # self.ax2.plot(df["epoch"], df["valuex"],
+        #               color=self.colorChoose(255, 0, 255))
+        # self.ax2.plot(df["epoch"], df["valuey"],
+        #               color=self.colorChoose(255, 0, 0))
+        # self.ax2.plot(df["epoch"], df["valuez"],
+        #               color=self.colorChoose(255, 255, 0))
         self.color = self.colorChoose(random.randint(0, 255),
                     random.randint(0, 255),
                     random.randint(0, 255))
@@ -128,6 +129,7 @@ class ECE4012:
                 self.fig.canvas.draw()
 
     def onpress(self, event):
+        # print(event.key())
         print(event.key)
         if event.key == 'r':
             self.color = self.colorChoose(255, 0, 0)

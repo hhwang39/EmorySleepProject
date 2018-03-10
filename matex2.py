@@ -11,8 +11,8 @@
 from __future__ import unicode_literals
 import numpy as np
 import sys
-import os
-import random
+# import os
+# import random
 import matplotlib
 from ece4012 import ECE4012
 matplotlib.use('Qt5Agg')
@@ -24,11 +24,12 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.backend_bases import NavigationToolbar2 as NavigationToolbar
-progname = os.path.basename(sys.argv[0])
-progversion = "0.1"
+# progname = os.path.basename(sys.argv[0])
+# progversion = "0.1"
 
 class MyNavigationToolbar(NavigationToolbar):
     def __init__(self, canvas, parent, fig):
+        self.ece = None
         # self.canvas = canvas
         # self.parent = parent
         # C:\Python36\Lib\site-packages\matplotlib\mpl-data\images is the directory
@@ -43,7 +44,7 @@ class MyNavigationToolbar(NavigationToolbar):
             ("Hello", "Hello", "music", 'hello'),
             ('Pan', 'Pan axes with left mouse, zoom with right', 'move', 'pan'),
             # (None, None, None, None),
-            # ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
+             ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
             ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots'),
             # (None, None, None, None),
             ('Save', 'Save the figure', 'filesave', 'save_figure'),
@@ -69,8 +70,8 @@ class MyNavigationToolbar(NavigationToolbar):
             self.ece.run()
     def exportCSV(self):
         print("nono")
-
-        # np.savetxt("foo.csv", self.ece., delimiter=",")
+        if self.ece is not None:
+            np.savetxt("foo.csv", self.ece.df, delimiter=",")
 
 
 class MyMplCanvas(FigureCanvas):
@@ -78,7 +79,7 @@ class MyMplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = self.fig.add_subplot(111)
+        # self.axes = self.fig.add_subplot(111)
 
         self.compute_initial_figure()
 
@@ -89,20 +90,20 @@ class MyMplCanvas(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-
+        self.fig.canvas.setFocus()
     def compute_initial_figure(self):
         pass
 
 
-class MyStaticMplCanvas(MyMplCanvas):
-    """Simple canvas with a sine plot."""
-
-    def compute_initial_figure(self):
-        pass
-        # t = arange(0.0, 3.0, 0.01)
-        # s = sin(2*pi*t)
-        # self.axes.plot(t, s)
-
+# class MyStaticMplCanvas(MyMplCanvas):
+#     """Simple canvas with a sine plot."""
+#
+#     def compute_initial_figure(self):
+#         pass
+#         # t = arange(0.0, 3.0, 0.01)
+#         # s = sin(2*pi*t)
+#         # self.axes.plot(t, s)
+#
 
 # class MyDynamicMplCanvas(MyMplCanvas):
 #     """A canvas that updates itself every second with a new plot."""
@@ -144,7 +145,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.main_widget)
-        sc = MyStaticMplCanvas(self.main_widget, width=20, height=10, dpi=100)
+        sc = MyMplCanvas(self.main_widget, width=20, height=10, dpi=100)
+        sc.setFocusPolicy( QtCore.Qt.ClickFocus )
+        sc.setFocus()
         # dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
         l.addWidget(sc)
         # l.addWidget(dc)
@@ -160,6 +163,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, ce):
         self.fileQuit()
+    # def keyPressEvent(self, e):
+    #     print(e.key())
 
     def about(self):
         QtWidgets.QMessageBox.about(self, "About",
