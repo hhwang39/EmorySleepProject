@@ -69,9 +69,9 @@ class MyNavigationToolbar(NavigationToolbar):
             self.ece = ECE4012(self.fig, fileName)
             self.ece.run()
     def exportCSV(self):
-        print("nono")
         if self.ece is not None:
-            np.savetxt("foo.csv", self.ece.df, delimiter=",")
+            print("nono")
+            self.ece.df.to_csv("foo.csv", sep=",", encoding='utf-8')
 
 
 class MyMplCanvas(FigureCanvas):
@@ -185,7 +185,7 @@ between qt4 and qt5"""
 qApp = QtWidgets.QApplication(["H"])
 
 aw = ApplicationWindow()
-aw.setWindowTitle("%s" % "zzz")
+aw.setWindowTitle("%s" % "ECE4012")
 aw.show()
 sys.exit(qApp.exec_())
 #qApp.exec_()
