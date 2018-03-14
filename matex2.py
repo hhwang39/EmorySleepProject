@@ -71,8 +71,11 @@ class MyNavigationToolbar(NavigationToolbar):
     def exportCSV(self):
         if self.ece is not None:
             print("nono")
-            self.ece.df.to_csv("foo.csv", sep=",", encoding='utf-8')
-
+            options = QtWidgets.QFileDialog.Options()
+            options |= QtWidgets.QFileDialog.DontUseNativeDialog
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(None, "Save Your CSV", "", "All Files (*);;CSV Files (*.csv)", options=options)
+            self.ece.df.to_csv(fileName, sep=",", encoding='utf-8')
+          
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
