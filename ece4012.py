@@ -47,6 +47,10 @@ class ECE4012:
         #create variable to track initial click xpos
         self.xpos=0
         self.df = df
+
+        #adjust distance between toolbar and graph to give more space
+        self.fig.subplots_adjust(bottom=0.145)
+            
         #adjust distance between toolbar and graph if data is 24 hours or more      
         if totaltime>24:
             self.fig.subplots_adjust(bottom=0.3)
