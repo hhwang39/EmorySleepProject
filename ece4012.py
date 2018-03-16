@@ -7,20 +7,22 @@ import time
 import matplotlib.patches as matpat
 from matplotlib.patches import Rectangle
 import random
+import matplotlib.dates as mdates
 
 PRE_DEF_CLICK_TIME = 0.5
 
 
 class ECE4012:
-    def __init__(self, figure, filename):
+    def __init__(self, figure, filename,toolbar):
         self.fig = figure
+        self.toolbar=toolbar
         self.fig.canvas.mpl_connect('button_release_event', self.onrelease)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onpress)
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
         # print(self.fig)
         self.conn = self.getConnection(filename)
-        df = pd.read_sql_query("select * from  acc LIMIT 1000;", self.conn)
+        df = pd.read_sql_query("select * from  acc LIMIT 1000 ;", self.conn)
         avgX = np.sum(df["valuex"]) / len(df["valuex"])
         avgY = np.sum(df["valuey"]) / len(df["valuey"])
         avgZ = np.sum(df["valuez"]) / len(df["valuez"])
@@ -29,10 +31,39 @@ class ECE4012:
         df["valuez"] = np.subtract(df["valuez"], avgZ)
         df["mag"] = np.sqrt(df["valuex"] * df["valuex"] + df['valuey'] * df['valuey'] + \
                             df["valuez"] * df["valuez"])
+        #Convert epoch to datetime to see the right value
+        df['epoch']=pd.to_datetime(df['epoch'], unit='ms')
+        #Definition of x-axis formatter of tick
+        self.hoursFmt = mdates.DateFormatter('%a %m/%d %H:%M:%S') #Week Month/Day H:M:S
+
+        #Get total time of the data in hours
+        startDate=df.iloc[0,0]
+        endDate=df.iloc[-1,0]
+        totaltime=int(endDate.timestamp()*1000)- int(startDate.timestamp()*1000)
+        totaltime=totaltime/1000/3600 #totaltime in hours
+
+        #create variable to track drag time
+        self.timeTrack=0
+        #create variable to track initial click xpos
+        self.xpos=0
         self.df = df
+        #adjust distance between toolbar and graph if data is 24 hours or more      
+        if totaltime>24:
+            self.fig.subplots_adjust(bottom=0.3)
+
+        
         self.ax = self.fig.add_subplot(1, 1, 1)
         # self.ax2 = self.fig.add_subplot(2, 1, 2)
         self.ax.plot(df["epoch"], df["mag"])
+        
+        #setup format of ticks to Weekday month/day if data is 24 hours or more
+        if totaltime>24:
+            self.ax.xaxis.set_major_formatter(self.hoursFmt)
+            
+
+        
+        #Rotate labels on x-axis 45 degrees and set font size to 8
+        self.ax.tick_params(axis='x', labelsize=8,rotation=45)
         # self.ax.title("Magnitude")
         # self.ax2.plot(df["epoch"], df["valuex"],
         #               color=self.colorChoose(255, 0, 255))
@@ -98,11 +129,12 @@ class ECE4012:
 
 
     def onclick(self, event):
-        if event.button == 1: # left = 1, middle = 2, right = 3
-            self.ax.timeTrack = time.time()
-            print("clicked {}".format(self.ax.timeTrack))
+        
+        if  not self.toolbar._actions['zoom'].isChecked() and event.button == 1: # left = 1, middle = 2, right = 3
+            self.timeTrack = time.time()
+            print("clicked {}".format(self.timeTrack))
             print("clicked X: {}".format(event.xdata))
-            self.ax.xpos = event.xdata
+            self.xpos = event.xdata
             # [ymin, ymax] = self.ax.get_ylim()
             # self.ax.annotate('sth', xy=(event.xdata, event.ydata),
             #                  xytext=(event.xdata, ymax),
@@ -111,11 +143,11 @@ class ECE4012:
 
 
     def onrelease(self, event):
-        if event.button == 1:
+        if not self.toolbar._actions['zoom'].isChecked() and event.button == 1:
             curTime = time.time()
-            if (curTime - self.ax.timeTrack) > PRE_DEF_CLICK_TIME:
+            if (curTime - self.timeTrack) > PRE_DEF_CLICK_TIME:
                 print("dragged")
-                xmin = self.ax.xpos
+                xmin = self.xpos
                 xmax = event.xdata
                 width = xmax - xmin
                 print(width)

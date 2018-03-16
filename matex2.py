@@ -66,7 +66,8 @@ class MyNavigationToolbar(NavigationToolbar):
         # print(fileName)
         if fileName is not None:
             # print("mmm")
-            self.ece = ECE4012(self.fig, fileName)
+            #passing toolbar to ECE4012 class
+            self.ece = ECE4012(self.fig, fileName,self)
             self.ece.run()
     def exportCSV(self):
         if self.ece is not None:
