@@ -61,11 +61,11 @@ class MyNavigationToolbar(NavigationToolbar):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                             "Choose Your DB",
                                                             "",
-                                                            "All Files (*);;Database Files (*.db)",
+                                                            "Database Files (*.db);;All Files (*)",
                                                             options=options)
-        # print(fileName)
-        if fileName is not None:
-            # print("mmm")
+        if fileName:
+            print("File opened " + fileName)
+            # print(fileName)
             #passing toolbar to ECE4012 class
             self.ece = ECE4012(self.fig, fileName,self)
             self.ece.run()
@@ -74,8 +74,13 @@ class MyNavigationToolbar(NavigationToolbar):
             print("nono")
             options = QtWidgets.QFileDialog.Options()
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
-            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(None, "Save Your CSV", "", "All Files (*);;CSV Files (*.csv)", options=options)
-            self.ece.df.to_csv(fileName, sep=",", encoding='utf-8')
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(None,
+                                                                "Save Your CSV",
+                                                                "",
+                                                                "CSV Files (*.csv);;All Files (*)",
+                                                                options=options)
+            if fileName:
+                self.ece.df.to_csv(fileName, sep=",", encoding='utf-8')
           
 
 class MyMplCanvas(FigureCanvas):
@@ -160,7 +165,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
-        self.statusBar().showMessage("All hail matplotlib!", 2000)
+        self.statusBar().showMessage("All hail Emory Clinic!", 3000)
 
     def fileQuit(self):
         self.close()

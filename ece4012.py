@@ -13,16 +13,19 @@ PRE_DEF_CLICK_TIME = 0.5
 
 
 class ECE4012:
-    def __init__(self, figure, filename,toolbar):
+    def __init__(self, figure, filename, toolbar):
+        self.annoteText = "annonated"
         self.fig = figure
-        self.toolbar=toolbar
+        self.toolbar = toolbar
         self.fig.canvas.mpl_connect('button_release_event', self.onrelease)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onpress)
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
         # print(self.fig)
         self.conn = self.getConnection(filename)
-        df = pd.read_sql_query("select * from  acc LIMIT 1000 ;", self.conn)
+        df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
+        # TODO this calibartion should change to either actual calibration from
+        # metawear C
         avgX = np.sum(df["valuex"]) / len(df["valuex"])
         avgY = np.sum(df["valuey"]) / len(df["valuey"])
         avgZ = np.sum(df["valuez"]) / len(df["valuez"])
@@ -31,43 +34,49 @@ class ECE4012:
         df["valuez"] = np.subtract(df["valuez"], avgZ)
         df["mag"] = np.sqrt(df["valuex"] * df["valuex"] + df['valuey'] * df['valuey'] + \
                             df["valuez"] * df["valuez"])
+        charArr = np.chararray((len(df["mag"], )), unicode=True)
+        charArr[:] = ' '
+        df["annotated"] = pd.DataFrame(charArr)
+        df["colorHex"] = pd.DataFrame(charArr)
         #Convert epoch to datetime to see the right value
-        df['epoch']=pd.to_datetime(df['epoch'], unit='ms')
+        df['epoch'] = pd.to_datetime(df['epoch'], unit='ms')
+        # print(df["epoch"])
+        # print(type(df['epoch'][0]))
         #Definition of x-axis formatter of tick
-        self.hoursFmt = mdates.DateFormatter('%a %m/%d %H:%M:%S') #Week Month/Day H:M:S
-
+        # self.hoursFmt = mdates.DateFormatter('%Y-%m-%d %H:%M:%S') #Week Month/Day H:M:S
+        self.hoursFmt = mdates.DateFormatter('%a-%m-%d %H:%M:%S')
         #Get total time of the data in hours
-        startDate=df.iloc[0,0]
-        endDate=df.iloc[-1,0]
-        totaltime=int(endDate.timestamp()*1000)- int(startDate.timestamp()*1000)
-        totaltime=totaltime/1000/3600 #totaltime in hours
+        startDate = df.iloc[0, 0]
+        endDate = df.iloc[-1, 0]
+        totaltime = int(endDate.timestamp() * 1000) - \
+                    int(startDate.timestamp() * 1000)
+        total_hours = totaltime/1000/3600 #totaltime in hours
 
         #create variable to track drag time
         self.timeTrack=0
         #create variable to track initial click xpos
-        self.xpos=0
+        self.xpos = 0
         self.df = df
 
         #adjust distance between toolbar and graph to give more space
         self.fig.subplots_adjust(bottom=0.145)
             
         #adjust distance between toolbar and graph if data is 24 hours or more      
-        if totaltime>24:
+        if total_hours > 24:
             self.fig.subplots_adjust(bottom=0.3)
 
-        
         self.ax = self.fig.add_subplot(1, 1, 1)
         # self.ax2 = self.fig.add_subplot(2, 1, 2)
         self.ax.plot(df["epoch"], df["mag"])
-        
+        # self.ax.xaxis.set_major_formatter(self.hoursFmt)
         #setup format of ticks to Weekday month/day if data is 24 hours or more
-        if totaltime>24:
+        if total_hours>24:
             self.ax.xaxis.set_major_formatter(self.hoursFmt)
             
 
         
         #Rotate labels on x-axis 45 degrees and set font size to 8
-        self.ax.tick_params(axis='x', labelsize=8,rotation=45)
+        self.ax.tick_params(axis='x', labelsize=8, rotation=45)
         # self.ax.title("Magnitude")
         # self.ax2.plot(df["epoch"], df["valuex"],
         #               color=self.colorChoose(255, 0, 255))
@@ -133,8 +142,7 @@ class ECE4012:
 
 
     def onclick(self, event):
-        
-        if  not self.toolbar._actions['zoom'].isChecked() and event.button == 1: # left = 1, middle = 2, right = 3
+        if not self.toolbar._actions['zoom'].isChecked() and event.button == 1: # left = 1, middle = 2, right = 3
             self.timeTrack = time.time()
             print("clicked {}".format(self.timeTrack))
             print("clicked X: {}".format(event.xdata))
@@ -147,17 +155,28 @@ class ECE4012:
 
 
     def onrelease(self, event):
-        if not self.toolbar._actions['zoom'].isChecked() and event.button == 1:
+        if not self.toolbar._actions['zoom'].isChecked() \
+                and not self.toolbar._actions['pan'].isChecked() \
+                and event.button == 1:
             curTime = time.time()
             if (curTime - self.timeTrack) > PRE_DEF_CLICK_TIME:
                 print("dragged")
                 xmin = self.xpos
                 xmax = event.xdata
                 width = xmax - xmin
-                print(width)
+                # print(xmin)
+                # print(xmax)
+                # print(type(xmin))
+                # print(mdates.num2date(xmin))
+                # print(mdates.num2date(xmax))
+                # print(type(xmax))
+                # print(width)
                 [ymin, ymax] = self.ax.get_ylim()
                 height = ymax - ymin
-                print(height)
+
+                # print(any(cond))
+                self.create_annotation(xmin, xmax)
+                # print(height)
                 rect = matpat.Rectangle((xmin, ymin), width, height,
                                         fill=True, alpha=0.4,
                                         color=self.color, picker=True)
@@ -168,23 +187,44 @@ class ECE4012:
         # print(event.key())
         print(event.key)
         if event.key == 'r':
+            self.annoteText = "Kick"
             self.color = self.colorChoose(255, 0, 0)
         elif event.key == 'b':
+            self.annoteText = "Sleep"
             self.color = self.colorChoose(0, 0, 255)
         elif event.key == 'g':
+            self.annoteText = "Random"
             self.color = self.colorChoose(0, 255, 0)
         elif event.key == "delete":
             print("delete")
             if self.removedObj is not None:
-                self.removedObj.remove()
+                if isinstance(self.removedObj, Rectangle):
+                    rect_min_x = self.removedObj.get_x()
+                    rect_max_x = rect_min_x + self.removedObj.get_width()
+                    self.remove_annotation(rect_min_x, rect_max_x)
+                    self.removedObj.remove()
+                    self.fig.canvas.draw()
                 self.removedObj = None
-                self.fig.canvas.draw()
 
     def run(self):
         self.fig.canvas.draw()
+    def create_annotation(self, xmin, xmax):
+        cond = self.get_x_in_ranges(xmin, xmax)
+        self.df.loc[cond, 'annonated'] = self.annoteText
+        self.df.loc[cond, 'colorHex'] = self.get_color_in_hex()
 
+    def remove_annotation(self, xmin, xmax):
+        cond = self.get_x_in_ranges(xmin, xmax)
+        self.df.loc[cond, 'annonated'] = " "
+        self.df.loc[cond, 'colorHex'] = " "
 
-
+    def get_x_in_ranges(self, xmin, xmax):
+        return (self.df["epoch"] <= mdates.num2date(xmax)) \
+               & (self.df["epoch"] >= mdates.num2date(xmin))
+    def get_color_in_hex(self):
+        return "#{:02X}{:02X}{:02X}".format(int(self.color[0] * 255),
+                                            int(self.color[1] * 255),
+                                            int(self.color[2] * 255))
 
 # initalize figure
 
