@@ -34,28 +34,27 @@ class MyNavigationToolbar(NavigationToolbar):
         # self.parent = parent
         # C:\Python36\Lib\site-packages\matplotlib\mpl-data\images is the directory
         # you want to put image as (name)_large.png. it should be 48 x 48.
-        # for people using anaconda the directory is:
-        # C:\Users\"YourUserName"\Anaconda3\Lib\site-packages\matplotlib\mpl-data\images
         self.fig = fig
         self.toolitems = (
+            # Name, Hover Over Brief Detail, Image, function call
             ("ImportDB", "Import DB file", "import", "importDB"),
             ('Home', 'Reset original view', 'home', 'home'),
             ('Back', 'Back to  previous view', 'back', 'back'),
             ('Forward', 'Forward to next view', 'forward', 'forward'),
             # (None, None, None, None),
-            ("Hello", "Hello", "music", 'hello'),
             ('Pan', 'Pan axes with left mouse, zoom with right', 'move', 'pan'),
             # (None, None, None, None),
              ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
             ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots'),
             # (None, None, None, None),
-            ('Save', 'Save the figure', 'filesave', 'save_figure'),
-            ("Export", "Export DB to CSV", "export", "exportCSV")
+            ('Save', 'Save the figure', 'camera', 'save_figure'),
+            ("Export", "Export DB to CSV", "export", "exportCSV"),
+            ("Help", "Help", "question", 'help'),
         )
         NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
 
-    def hello(self):
-        print("Hello")
+    # def hello(self):
+    #     print("Hello")
 
     def importDB(self):
         options = QtWidgets.QFileDialog.Options()
@@ -69,7 +68,7 @@ class MyNavigationToolbar(NavigationToolbar):
             print("File opened " + fileName)
             # print(fileName)
             #passing toolbar to ECE4012 class
-            self.ece = ECE4012(self.fig, fileName,self)
+            self.ece = ECE4012(self.fig, fileName, self)
             self.ece.run()
     def exportCSV(self):
         if self.ece is not None:
@@ -83,6 +82,13 @@ class MyNavigationToolbar(NavigationToolbar):
                                                                 options=options)
             if fileName:
                 self.ece.df.to_csv(fileName, sep=",", encoding='utf-8')
+    def help(self):
+        QtWidgets.QMessageBox.about(None, "help", """
+        @Copyright Eternal Knights
+        In order to change color you press r(Red/Sleep), b(Blue/Sleep), g(Green/Random). 
+        You can zoom in or go back to previous state by using icons below.  
+        """)
+
           
 
 class MyMplCanvas(FigureCanvas):
