@@ -23,23 +23,31 @@ class ECE4012:
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
         # print(self.fig)
         self.conn = self.getConnection(filename)
-        df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
+        # df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
+        df = pd.read_sql_query("select * from  acc;", self.conn)
+        print("Starting")
         # TODO this calibartion should change to either actual calibration from
         # metawear C
-        avgX = np.sum(df["valuex"]) / len(df["valuex"])
-        avgY = np.sum(df["valuey"]) / len(df["valuey"])
-        avgZ = np.sum(df["valuez"]) / len(df["valuez"])
-        df["valuex"] = np.subtract(df["valuex"], avgX)
-        df["valuey"] = np.subtract(df["valuey"], avgY)
-        df["valuez"] = np.subtract(df["valuez"], avgZ)
-        df["mag"] = np.sqrt(df["valuex"] * df["valuex"] + df['valuey'] * df['valuey'] + \
-                            df["valuez"] * df["valuez"])
+        # print(len(df["valuex"]))
+        # avgX = np.sum(df["valuex"]) / len(df["valuex"])
+        # avgY = np.sum(df["valuey"]) / len(df["valuey"])
+        # avgZ = np.sum(df["valuez"]) / len(df["valuez"])
+        # df["valuex"] = np.subtract(df["valuex"], avgX)
+        # df["valuey"] = np.subtract(df["valuey"], avgY)
+        # df["valuez"] = np.subtract(df["valuez"], avgZ)
+        df["mag"] = np.sqrt(np.square(df["valuex"]) + np.square(df['valuey']) + \
+                            np.square(df["valuez"]))
+        print("Normalize")
+        # print(df["mag"])
+        # df["mag"] = df["mag"] - 1 # subtract 1g
         charArr = np.chararray((len(df["mag"], )), unicode=True)
         charArr[:] = ' '
         df["annotated"] = pd.DataFrame(charArr)
         df["colorHex"] = pd.DataFrame(charArr)
         #Convert epoch to datetime to see the right value
+        print("Convert Date Time")
         df['epoch'] = pd.to_datetime(df['epoch'], unit='ms')
+
         # print(df["epoch"])
         # print(type(df['epoch'][0]))
         #Definition of x-axis formatter of tick
@@ -64,10 +72,44 @@ class ECE4012:
         #adjust distance between toolbar and graph if data is 24 hours or more      
         if total_hours > 24:
             self.fig.subplots_adjust(bottom=0.3)
+        print("Start Plot Setting")
+        self.ax = self.fig.add_subplot(2, 1, 1)
+        # second axis
+        self.ax2 = self.fig.add_subplot(2, 1, 2)
+        # Set default values for x aixs
+        self.ax.set_ylim(0, 8)
+        self.ax2.set_ylim(0, 8)
+        self.ax.set_xlabel("Time")
+        self.ax2.set_xlabel("Time")
+        self.ax.set_ylabel("Acceleration (g)")
+        self.ax2.set_ylabel("Acceleration (g)")
 
-        self.ax = self.fig.add_subplot(1, 1, 1)
-        # self.ax2 = self.fig.add_subplot(2, 1, 2)
+        # start date
+        # print(type(df["epoch"]))
+        # print(len(df["epoch"]))
+        # print(df["epoch"])
+        # print()
+        # TODO we assume time is not empty but it could be good to chek empty
+        start_time = df["epoch"].iloc[0]
+        print(start_time)
+        # print(type(start_time))
+        end_time = start_time + pd.Timedelta(hours=1)
+        print(end_time)
+        self.startX = start_time
+        self.endX = end_time
+        # set axis 2
+        self.ax2.set_xlim(start_time, end_time)
+        print("Set Limit")
+        # print(type(df["epoch"].iloc[0]))
+        mask = (df["epoch"] >= start_time) & (df["epoch"] <= end_time)
+        print("Plotting")
+        # print(mask)
+        # print(df.loc[mask, "epoch"])
+        # plot
         self.ax.plot(df["epoch"], df["mag"])
+        # print(df.loc[mask, "epoch"])
+        print(len(df.loc[mask, "epoch"]))
+        self.ax2.plot(df.loc[mask, "epoch"], df.loc[mask, "mag"])
         # self.ax.xaxis.set_major_formatter(self.hoursFmt)
         #setup format of ticks to Weekday month/day if data is 24 hours or more
         if total_hours>24:
@@ -195,6 +237,27 @@ class ECE4012:
         elif event.key == 'g':
             self.annoteText = "Random"
             self.color = self.colorChoose(0, 255, 0)
+        elif event.key == "right":
+            print("right pressed")
+            self.startX += pd.Timedelta(hours=1)
+            self.endX += pd.Timedelta(hours=1)
+            self.ax2.set_xlim(self.startX, self.endX)
+            mask = (self.df["epoch"] >= self.startX) & \
+                   (self.df["epoch"] <= self.endX)
+            self.ax2.plot(self.df.loc[mask, "epoch"],
+                          self.df.loc[mask, "mag"], '#1f77b4')
+            self.run()
+        elif event.key == "left":
+            # TODO check left and right limit
+            print("left pressed")
+            self.startX -= pd.Timedelta(hours=1)
+            self.endX -= pd.Timedelta(hours=1)
+            self.ax2.set_xlim(self.startX, self.endX)
+            mask = (self.df["epoch"] >= self.startX) & \
+                   (self.df["epoch"] <= self.endX)
+            self.ax2.plot(self.df.loc[mask, "epoch"],
+                          self.df.loc[mask, "mag"], '#1f77b4')
+            self.run()
         elif event.key == "delete":
             print("delete")
             if self.removedObj is not None:

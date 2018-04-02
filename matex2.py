@@ -163,7 +163,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         l = QtWidgets.QVBoxLayout(self.main_widget)
         sc = MyMplCanvas(self.main_widget, width=20, height=10, dpi=100)
-        sc.setFocusPolicy( QtCore.Qt.ClickFocus )
+        sc.setFocusPolicy(QtCore.Qt.ClickFocus)
         sc.setFocus()
         # dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
         l.addWidget(sc)
