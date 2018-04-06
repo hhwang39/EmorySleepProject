@@ -14,6 +14,7 @@ PRE_DEF_CLICK_TIME = 0.5
 
 class ECE4012:
     def __init__(self, figure, filename, toolbar):
+        figure.clear()
         self.annoteText = "annonated"
         self.fig = figure
         self.toolbar = toolbar
@@ -46,6 +47,8 @@ class ECE4012:
         df["colorHex"] = pd.DataFrame(charArr)
         #Convert epoch to datetime to see the right value
         print("Convert Date Time")
+        print(df["epoch"].iloc[0])
+        print(df["epoch"].iloc[1])
         df['epoch'] = pd.to_datetime(df['epoch'], unit='ms')
 
         # print(df["epoch"])
