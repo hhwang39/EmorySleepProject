@@ -15,6 +15,7 @@ PRE_DEF_CLICK_TIME = 0.5
 class ECE4012:
     def __init__(self, figure, filename, toolbar):
         figure.clear()
+        figure.subplots_adjust(hspace=1.0)
         self.annoteText = "annonated"
         self.fig = figure
         self.toolbar = toolbar

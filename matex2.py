@@ -20,6 +20,7 @@ matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
 
 from numpy import arange, sin, pi
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -29,6 +30,8 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 class MyNavigationToolbar(NavigationToolbar):
     def __init__(self, canvas, parent, fig):
+        # plt.clf()
+        # fig.clear()
         self.ece = None
         # self.canvas = canvas
         # self.parent = parent
@@ -53,6 +56,16 @@ class MyNavigationToolbar(NavigationToolbar):
         )
         NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
 
+
+    def drag_pan(self, event):
+        if self._xypress:
+            x, y = event.x, event.y
+            lastx, lasty, a, ind, view = self._xypress[0]
+            (x1, y1), (x2, y2) = np.clip(
+                [[lastx, lasty], [x, y]], a.bbox.min, a.bbox.max)
+            # self._zoom_mode = "x"
+            y1, y2 = a.bbox.intervaly
+            self.draw_rubberband(event, x1, y1, x2, y2)
     # def hello(self):
     #     print("Hello")
 
