@@ -37,6 +37,8 @@ class MyNavigationToolbar(NavigationToolbar):
         # self.parent = parent
         # C:\Python36\Lib\site-packages\matplotlib\mpl-data\images is the directory
         # you want to put image as (name)_large.png. it should be 48 x 48.
+        # where to put the images for Anaconda
+        # C:\Users\"UserName"\Anaconda3\Lib\site-packages\matplotlib\mpl-data\images
         self.fig = fig
         self.toolitems = (
             # Name, Hover Over Brief Detail, Image, function call

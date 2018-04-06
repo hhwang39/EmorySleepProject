@@ -8,6 +8,7 @@ import matplotlib.patches as matpat
 from matplotlib.patches import Rectangle
 import random
 import matplotlib.dates as mdates
+from matplotlib.widgets import RadioButtons, CheckButtons
 
 PRE_DEF_CLICK_TIME = 0.5
 
@@ -26,7 +27,7 @@ class ECE4012:
         # print(self.fig)
         self.conn = self.getConnection(filename)
         # df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
-        df = pd.read_sql_query("select * from  acc;", self.conn)
+        df = pd.read_sql_query("select * from  acc LIMIT 1000;", self.conn)
         print("Starting")
         # TODO this calibartion should change to either actual calibration from
         # metawear C
@@ -37,6 +38,19 @@ class ECE4012:
         # df["valuex"] = np.subtract(df["valuex"], avgX)
         # df["valuey"] = np.subtract(df["valuey"], avgY)
         # df["valuez"] = np.subtract(df["valuez"], avgZ)
+        self.axTop = self.fig.add_subplot(2, 1, 1)
+        self.axBottom = self.fig.add_subplot(2, 1, 2)
+        self.fig.subplots_adjust(bottom=0.3,left=0.3,hspace=0.5)
+        self.labels=['30 sec','5 min','30 min', '1 hr', '2 hr']
+        self.rax = self.fig.add_axes([0.02, 0.4, 0.11, 0.15])
+        self.rax.set_title('Scale')
+        self.check = RadioButtons(self.rax, self.labels)
+        self.fig.canvas.mpl_connect('button_press_event', self.onclick)
+        #self.rcbax = self.fig.add_axes([0.02, 0.7, 0.11, 0.15])
+        #self.rcbax.set_title('DataSet')
+        #self.checkBox = CheckButtons(self.rcbax, ('valuex', 'valuey', 'valuez'), (False, True, True))
+        #self.checkBox.on_clicked(self.oncheck)
+
         df["mag"] = np.sqrt(np.square(df["valuex"]) + np.square(df['valuey']) + \
                             np.square(df["valuez"]))
         print("Normalize")
