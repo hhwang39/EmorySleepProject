@@ -8,18 +8,28 @@ import matplotlib.patches as matpat
 from matplotlib.patches import Rectangle
 import random
 import matplotlib.dates as mdates
-from matplotlib.widgets import RadioButtons, CheckButtons
+from matplotlib.widgets import RadioButtons
+from matplotlib.widgets import Cursor
 
 PRE_DEF_CLICK_TIME = 0.5
+
+
+# class ECERectangle(Rectangle):
+#     def __init__(self):
+#         Rectangle.__init__()
+
+
 
 
 class ECE4012:
     def __init__(self, figure, filename, toolbar):
         figure.clear()
         figure.subplots_adjust(hspace=1.0)
+        self.rect = None
         self.annoteText = "annonated"
         self.fig = figure
         self.toolbar = toolbar
+        self.isAnnotate = False
         self.fig.canvas.mpl_connect('button_release_event', self.onrelease)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onpress)
@@ -27,7 +37,7 @@ class ECE4012:
         # print(self.fig)
         self.conn = self.getConnection(filename)
         # df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
-        df = pd.read_sql_query("select * from  acc LIMIT 1000;", self.conn)
+        df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
         print("Starting")
         # TODO this calibartion should change to either actual calibration from
         # metawear C
@@ -54,6 +64,12 @@ class ECE4012:
         df["mag"] = np.sqrt(np.square(df["valuex"]) + np.square(df['valuey']) + \
                             np.square(df["valuez"]))
         print("Normalize")
+        ya_min = df.loc[:, "mag"].min() - 0.1
+        ya_max = df.loc[:, "mag"].max() + 0.1
+        # print("Normalized")
+        # print(type(ya_min))
+        # print(ya_max)
+
         # print(df["mag"])
         # df["mag"] = df["mag"] - 1 # subtract 1g
         charArr = np.chararray((len(df["mag"], )), unicode=True)
@@ -95,13 +111,19 @@ class ECE4012:
         # second axis
         self.ax2 = self.fig.add_subplot(2, 1, 2)
         # Set default values for x aixs
-        self.ax.set_ylim(0, 8)
-        self.ax2.set_ylim(0, 8)
+        ##changed temporary pls ignore
+        # self.ax.set_ylim(1, 1.1)
+        # self.ax2.set_ylim(1, 1.1)
+        #self.ax.set_ylim(0, 8)
+        #self.ax2.set_ylim(0, 8)
         self.ax.set_xlabel("Time")
         self.ax2.set_xlabel("Time")
         self.ax.set_ylabel("Acceleration (g)")
         self.ax2.set_ylabel("Acceleration (g)")
-
+        self.ax.set_ylim(ya_min, ya_max)
+        self.ax2.set_ylim(ya_min, ya_max)
+        # self.ya_min = ya_min
+        # self.ya_max = ya_max
         # start date
         # print(type(df["epoch"]))
         # print(len(df["epoch"]))
@@ -150,6 +172,20 @@ class ECE4012:
         self.removedObj = None
         # self.ax.add_patch(rect)
         self.fig.canvas.draw()
+        self.fig.canvas.mpl_connect('motion_notify_event', self.onmouseover)
+        self.cursor = Cursor(self.ax, useblit=True, horizOn=False, color='red', linewidth=2)
+        self.cursor.connect_event('button_press_event', self.cursorOnclick)
+        self.currentDelta= pd.Timedelta(5, unit='m')
+        
+    def onmouseover(self,event):
+
+        if event.inaxes == self.rax:
+            None
+            #logger.debug("click on radiobutton")
+            #self.check._clicked(event)
+        if event.inaxes == self.ax:
+            self.cursor.onmove(event)
+            
     def getConnection(self, filename):
         """
         get the connection of sqlite given file name
@@ -217,7 +253,7 @@ class ECE4012:
     def onrelease(self, event):
         if not self.toolbar._actions['zoom'].isChecked() \
                 and not self.toolbar._actions['pan'].isChecked() \
-                and event.button == 1:
+                and event.button == 1 and self.isAnnotate:
             curTime = time.time()
             if (curTime - self.timeTrack) > PRE_DEF_CLICK_TIME:
                 print("dragged")
@@ -234,6 +270,7 @@ class ECE4012:
                 [ymin, ymax] = self.ax.get_ylim()
                 height = ymax - ymin
 
+                #annotation problem temporary
                 # print(any(cond))
                 self.create_annotation(xmin, xmax)
                 # print(height)
@@ -306,7 +343,61 @@ class ECE4012:
         return "#{:02X}{:02X}{:02X}".format(int(self.color[0] * 255),
                                             int(self.color[1] * 255),
                                             int(self.color[2] * 255))
+    def setSelect(self):
+        self.isAnnotate = not self.isAnnotate
 
+    def cursorOnclick(self,event):
+        'on button press we will see if the mouse is over us '
+        if(self.ax==event.inaxes) and (not self.isAnnotate):
+            xdata = event.xdata 
+            dateclicked=mdates.num2date(xdata)
+            df2,epoch,endDate=self.createBottomGraph(dateclicked)
+            
+            mask = (df2["epoch"] >= dateclicked) & (df2["epoch"] <= endDate)
+            self.ax2.clear()
+            # self.ax2.set_ylim(1, 1.1)
+            self.ax2.plot(df2.loc[mask, "epoch"], df2.loc[mask, "mag"])
+            
+            locator = mdates.SecondLocator( interval=120)
+            
+            self.ax2.xaxis.set_major_locator(locator)
+            self.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+            
+            # self.ax2.relim()
+            self.ax2.autoscale_view(True,True,True)
+
+            x_ticks = np.append(self.ax2.get_xticks(), mdates.date2num(df2.iloc[0,0]))
+            x_ticks = np.append(x_ticks,mdates.date2num(df2.iloc[-1,0]))
+            #self.ax2.set_xticks(x_ticks)
+            #self.ax2.tick_params(axis='x', labelsize=8,rotation=45)
+
+            width=mdates.date2num(endDate)-xdata
+            [ymin, ymax] = self.ax.get_ylim()
+            height = ymax - ymin
+            if self.rect is not None:
+                self.rect.remove()
+            self.rect = matpat.Rectangle((xdata, ymin), width, height,
+                                        fill=True, alpha=0.4,
+                                        color=(1,0,0), picker=True)
+
+
+            self.ax.add_patch(self.rect)
+
+            self.fig.canvas.draw()
+            
+    def createBottomGraph(self,startDate):
+  
+        endDate=startDate + self.currentDelta
+        query="SELECT * from acc where epoch between {start} and {end} ".\
+            format(start=startDate.timestamp()*1000, end=endDate.timestamp()*1000)
+        df2 = pd.read_sql_query(query, self.conn)
+        df2['epoch']=pd.to_datetime(df2['epoch'], unit='ms')
+
+        datevalues= df2['epoch'].dt.to_pydatetime()
+
+        df2["mag"] = np.sqrt(np.square(df2["valuex"]) + np.square(df2['valuey']) + \
+                            np.square(df2["valuez"]))
+        return (df2,datevalues,endDate)
 # initalize figure
 
 #

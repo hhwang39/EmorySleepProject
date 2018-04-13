@@ -55,10 +55,13 @@ class MyNavigationToolbar(NavigationToolbar):
             ('Save', 'Save the figure', 'camera', 'save_figure'),
             ("Export", "Export DB to CSV", "export", "exportCSV"),
             ("Help", "Help", "question", 'help'),
+            ("Annotate", "Enable Annotate", "annotate", "enableAnnotate")
         )
         NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
 
-
+    def enableAnnotate(self):
+        if self.ece is not None:
+            self.ece.setSelect()
     def drag_pan(self, event):
         if self._xypress:
             x, y = event.x, event.y
