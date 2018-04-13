@@ -58,7 +58,7 @@ class MyNavigationToolbar(NavigationToolbar):
             ("Annotate", "Enable Annotate", "annotate", "enableAnnotate")
         )
         NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
-
+        self._actions["enableAnnotate"].setCheckable(True)
     def enableAnnotate(self):
         if self.ece is not None:
             self.ece.setSelect()
