@@ -49,7 +49,7 @@ class ECE4012:
         # print(self.fig)
         self.conn = self.getConnection(filename)
         # df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
-        df = pd.read_sql_query("select * from  acc LIMIT 100000;", self.conn)
+        df = pd.read_sql_query("select * from  acc;", self.conn)
         print("Starting")
         # TODO this calibartion should change to either actual calibration from
         # metawear C
@@ -163,7 +163,10 @@ class ECE4012:
         self.ax.plot(df["epoch"], df["mag"])
         # print(df.loc[mask, "epoch"])
         print(len(df.loc[mask, "epoch"]))
-        self.ax2.plot(df.loc[mask, "epoch"], df.loc[mask, "mag"])
+        self.ax2.plot(df["epoch"], df["mag"])
+        # x in the range
+        tX = df.loc[mask, "epoch"]
+        self.ax2.set_xlim(tX.iloc[0], tX.iloc[len(tX) - 1])
         # self.ax.xaxis.set_major_formatter(self.hoursFmt)
         #setup format of ticks to Weekday month/day if data is 24 hours or more
         if total_hours>24:
@@ -385,27 +388,31 @@ class ECE4012:
         if(self.ax==event.inaxes) and (not self.isAnnotate):
             xdata = event.xdata
             dateclicked=mdates.num2date(xdata)
-            df2,epoch,endDate=self.createBottomGraph(dateclicked)
+            dateEnd = dateclicked + self.currentDelta
+            # df2,epoch,endDate=self.createBottomGraph(dateclicked)
 
-            mask = (df2["epoch"] >= dateclicked) & (df2["epoch"] <= endDate)
-            self.ax2.clear()
+            # mask = (df2["epoch"] >= dateclicked) & (df2["epoch"] <= endDate)
+            # self.ax2.clear()
             # self.ax2.set_ylim(1, 1.1)
-            self.ax2.plot(df2.loc[mask, "epoch"], df2.loc[mask, "mag"])
-
-            locator = mdates.SecondLocator( interval=120)
+            # self.ax2.plot(df2.loc[mask, "epoch"], df2.loc[mask, "mag"])
+            mask = (self.df["epoch"] >= dateclicked) & (self.df["epoch"] <= dateEnd)
+            tX = self.df.loc[mask, "epoch"]
+            print(tX)
+            self.ax2.set_xlim(tX.iloc[0], tX.iloc[len(tX) - 1])
+            locator = mdates.SecondLocator(interval=120)
 
             self.ax2.xaxis.set_major_locator(locator)
             self.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
 
             # self.ax2.relim()
             self.ax2.autoscale_view(True,True,True)
-
-            x_ticks = np.append(self.ax2.get_xticks(), mdates.date2num(df2.iloc[0,0]))
-            x_ticks = np.append(x_ticks,mdates.date2num(df2.iloc[-1,0]))
-            #self.ax2.set_xticks(x_ticks)
-            #self.ax2.tick_params(axis='x', labelsize=8,rotation=45)
-
-            width=mdates.date2num(endDate)-xdata
+            #
+            # x_ticks = np.append(self.ax2.get_xticks(), mdates.date2num(df2.iloc[0,0]))
+            # x_ticks = np.append(x_ticks,mdates.date2num(df2.iloc[-1,0]))
+            # #self.ax2.set_xticks(x_ticks)
+            # #self.ax2.tick_params(axis='x', labelsize=8,rotation=45)
+            #
+            width=mdates.date2num(dateEnd)-xdata
             [ymin, ymax] = self.ax.get_ylim()
             height = ymax - ymin
             if self.rect is not None:
@@ -420,24 +427,23 @@ class ECE4012:
             self.ax.add_patch(self.rect)
 
             self.fig.canvas.draw()
-
-    def createBottomGraph(self,startDate):
-
-        endDate=startDate + self.currentDelta
-        query="SELECT * from acc where epoch between {start} and {end} ".\
-            format(start=startDate.timestamp()*1000, end=endDate.timestamp()*1000)
-        df2 = pd.read_sql_query(query, self.conn)
-        df2['epoch']=pd.to_datetime(df2['epoch'], unit='ms')
-
-        datevalues= df2['epoch'].dt.to_pydatetime()
-
-        df2["mag"] = np.sqrt(np.square(df2["valuex"]) + np.square(df2['valuey']) + \
-                            np.square(df2["valuez"]))
-        return (df2,datevalues,endDate)
-    
+            
     def changeScale(self,label):
         index = self.labels.index(label)
         self.currentDelta = self.scaleDeltaArray[index]
+    # def createBottomGraph(self,startDate):
+    #
+    #     endDate=startDate + self.currentDelta
+    #     query="SELECT * from acc where epoch between {start} and {end} ".\
+    #         format(start=startDate.timestamp()*1000, end=endDate.timestamp()*1000)
+    #     df2 = pd.read_sql_query(query, self.conn)
+    #     df2['epoch']=pd.to_datetime(df2['epoch'], unit='ms')
+    #
+    #     datevalues= df2['epoch'].dt.to_pydatetime()
+    #
+    #     df2["mag"] = np.sqrt(np.square(df2["valuex"]) + np.square(df2['valuey']) + \
+    #                         np.square(df2["valuez"]))
+    #     return (df2,datevalues,endDate)
 # initalize figure
 
 #
