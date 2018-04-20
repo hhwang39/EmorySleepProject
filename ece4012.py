@@ -38,7 +38,7 @@ class ECE4012:
         figure.clear()
         figure.subplots_adjust(hspace=1.0)
         self.rect = None
-        self.annoteText = "annonated"
+        self.annoteText = "annotated"
         self.fig = figure
         self.toolbar = toolbar
         self.isAnnotate = False
@@ -364,13 +364,14 @@ class ECE4012:
     def run(self):
         self.fig.canvas.draw()
     def create_annotation(self, xmin, xmax):
+        print("Annoated")
         cond = self.get_x_in_ranges(xmin, xmax)
-        self.df.loc[cond, 'annonated'] = self.annoteText
+        self.df.loc[cond, 'annotated'] = self.annoteText
         self.df.loc[cond, 'colorHex'] = self.get_color_in_hex()
 
     def remove_annotation(self, xmin, xmax):
         cond = self.get_x_in_ranges(xmin, xmax)
-        self.df.loc[cond, 'annonated'] = " "
+        self.df.loc[cond, 'annotated'] = " "
         self.df.loc[cond, 'colorHex'] = " "
 
     def get_x_in_ranges(self, xmin, xmax):
@@ -399,7 +400,7 @@ class ECE4012:
             # self.ax2.plot(df2.loc[mask, "epoch"], df2.loc[mask, "mag"])
             mask = (self.df["epoch"] >= dateclicked) & (self.df["epoch"] <= dateEnd)
             tX = self.df.loc[mask, "epoch"]
-            print(tX)
+            # print(tX)
             self.ax2.set_xlim(tX.iloc[0], tX.iloc[len(tX) - 1])
             # locator = mdates.SecondLocator(interval=120)
             self.ax2.get_xaxis().set_major_locator(LinearLocator(numticks=12))
