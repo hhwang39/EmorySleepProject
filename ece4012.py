@@ -64,15 +64,17 @@ class ECE4012:
         self.axBottom = self.fig.add_subplot(2, 1, 2)
         self.fig.subplots_adjust(bottom=0.3,left=0.3,hspace=0.5)
         self.labels=['30 sec','5 min','30 min', '1 hr', '2 hr']
+        sec30 = pd.Timedelta(30, unit='s')
+        min5 = pd.Timedelta(5, unit='m')
+        min30 = pd.Timedelta(30, unit='m')
+        hr1 =pd.Timedelta(1, unit='h')
+        hr2 =pd.Timedelta(2, unit='h')
+        self.scaleDeltaArray=[sec30, min5, min30, hr1, hr2]
         self.rax = self.fig.add_axes([0.02, 0.4, 0.11, 0.15])
         self.rax.set_title('Scale')
         self.check = RadioButtons(self.rax, self.labels)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
-        #self.rcbax = self.fig.add_axes([0.02, 0.7, 0.11, 0.15])
-        #self.rcbax.set_title('DataSet')
-        #self.checkBox = CheckButtons(self.rcbax, ('valuex', 'valuey', 'valuez'), (False, True, True))
-        #self.checkBox.on_clicked(self.oncheck)
-
+        self.check.on_clicked(self.changeScale)
         df["mag"] = np.sqrt(np.square(df["valuex"]) + np.square(df['valuey']) + \
                             np.square(df["valuez"]))
         print("Normalize")
@@ -432,6 +434,10 @@ class ECE4012:
         df2["mag"] = np.sqrt(np.square(df2["valuex"]) + np.square(df2['valuey']) + \
                             np.square(df2["valuez"]))
         return (df2,datevalues,endDate)
+    
+    def changeScale(self,label):
+        index = self.labels.index(label)
+        self.currentDelta = self.scaleDeltaArray[index]
 # initalize figure
 
 #
