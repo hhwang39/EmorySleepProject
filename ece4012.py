@@ -10,7 +10,7 @@ import random
 import matplotlib.dates as mdates
 from matplotlib.widgets import RadioButtons
 from matplotlib.widgets import Cursor
-
+from matplotlib.ticker import LinearLocator
 PRE_DEF_CLICK_TIME = 0.5
 
 
@@ -192,8 +192,8 @@ class ECE4012:
         self.fig.canvas.mpl_connect('motion_notify_event', self.onmouseover)
         self.cursor = Cursor(self.ax, useblit=True, horizOn=False, color='red', linewidth=2)
         self.cursor.connect_event('button_press_event', self.cursorOnclick)
-        self.currentDelta= pd.Timedelta(5, unit='m')
-
+        self.currentDelta= pd.Timedelta(30, unit='s')
+        self.ax2.get_xaxis().set_major_locator(LinearLocator(numticks=12))
     def onmouseover(self,event):
 
         if event.inaxes == self.rax:
@@ -322,24 +322,24 @@ class ECE4012:
             self.color = self.colorChoose(0, 255, 0)
         elif event.key == "right":
             print("right pressed")
-            self.startX += pd.Timedelta(hours=1)
-            self.endX += pd.Timedelta(hours=1)
+            self.startX += self.currentDelta
+            self.endX += self.currentDelta
             self.ax2.set_xlim(self.startX, self.endX)
-            mask = (self.df["epoch"] >= self.startX) & \
-                   (self.df["epoch"] <= self.endX)
-            self.ax2.plot(self.df.loc[mask, "epoch"],
-                          self.df.loc[mask, "mag"], '#1f77b4')
+            # mask = (self.df["epoch"] >= self.startX) & \
+            #        (self.df["epoch"] <= self.endX)
+            # self.ax2.plot(self.df.loc[mask, "epoch"],
+            #               self.df.loc[mask, "mag"], '#1f77b4')
             self.run()
         elif event.key == "left":
             # TODO check left and right limit
             print("left pressed")
-            self.startX -= pd.Timedelta(hours=1)
-            self.endX -= pd.Timedelta(hours=1)
+            self.startX -= self.currentDelta
+            self.endX -= self.currentDelta
             self.ax2.set_xlim(self.startX, self.endX)
-            mask = (self.df["epoch"] >= self.startX) & \
-                   (self.df["epoch"] <= self.endX)
-            self.ax2.plot(self.df.loc[mask, "epoch"],
-                          self.df.loc[mask, "mag"], '#1f77b4')
+            # mask = (self.df["epoch"] >= self.startX) & \
+            #        (self.df["epoch"] <= self.endX)
+            # self.ax2.plot(self.df.loc[mask, "epoch"],
+            #               self.df.loc[mask, "mag"], '#1f77b4')
             self.run()
         elif event.key == "delete":
             print("delete")
@@ -388,7 +388,9 @@ class ECE4012:
         if(self.ax==event.inaxes) and (not self.isAnnotate):
             xdata = event.xdata
             dateclicked=mdates.num2date(xdata)
+            self.startX = dateclicked
             dateEnd = dateclicked + self.currentDelta
+            self.endX = dateEnd
             # df2,epoch,endDate=self.createBottomGraph(dateclicked)
 
             # mask = (df2["epoch"] >= dateclicked) & (df2["epoch"] <= endDate)
@@ -399,17 +401,17 @@ class ECE4012:
             tX = self.df.loc[mask, "epoch"]
             print(tX)
             self.ax2.set_xlim(tX.iloc[0], tX.iloc[len(tX) - 1])
-            locator = mdates.SecondLocator(interval=120)
-
-            self.ax2.xaxis.set_major_locator(locator)
-            self.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+            # locator = mdates.SecondLocator(interval=120)
+            self.ax2.get_xaxis().set_major_locator(LinearLocator(numticks=12))
+            # self.ax2.xaxis.set_major_locator(locator)
+            # self.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
 
             # self.ax2.relim()
             self.ax2.autoscale_view(True,True,True)
             #
             # x_ticks = np.append(self.ax2.get_xticks(), mdates.date2num(df2.iloc[0,0]))
             # x_ticks = np.append(x_ticks,mdates.date2num(df2.iloc[-1,0]))
-            # #self.ax2.set_xticks(x_ticks)
+            #self.ax2.set_xticks(x_ticks)
             # #self.ax2.tick_params(axis='x', labelsize=8,rotation=45)
             #
             width=mdates.date2num(dateEnd)-xdata
