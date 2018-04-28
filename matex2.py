@@ -18,7 +18,7 @@ from ece4012 import ECE4012
 matplotlib.use('Qt5Agg')
 # Make sure that we are using QT5
 from PyQt5 import QtCore, QtWidgets
-
+import os
 from numpy import arange, sin, pi
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -43,11 +43,12 @@ class MyNavigationToolbar(NavigationToolbar):
         self.toolitems = (
             # Name, Hover Over Brief Detail, Image, function call
             ("ImportDB", "Import DB file", "import", "importDB"),
+            # ("ImportCSV", "Import CAV file", "importcsv", "importCSV"),
             ('Home', 'Reset original view', 'home', 'home'),
             ('Back', 'Back to  previous view', 'back', 'back'),
             ('Forward', 'Forward to next view', 'forward', 'forward'),
             # (None, None, None, None),
-            ('Pan', 'Pan axes with left mouse, zoom with right', 'move', 'pan'),
+            # ('Pan', 'Pan axes with left mouse, zoom with right', 'move', 'pan'),
             # (None, None, None, None),
              ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
             ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots'),
@@ -55,9 +56,10 @@ class MyNavigationToolbar(NavigationToolbar):
             ('Save', 'Save the figure', 'camera', 'save_figure'),
             ("Export", "Export DB to CSV", "export", "exportCSV"),
             ("Help", "Help", "question", 'help'),
-            ("Annotate", "Enable Annotate", "annotate", "enableAnnotate")
+            ("Annotate", "Enable Annotate", "annotate", "enableAnnotate"),
+            ("Calibrate", "Calibrate Your Plot", "calibration", "importCal")
         )
-        NavigationToolbar.__init__(self, canvas, parent, coordinates=False)
+        NavigationToolbar.__init__(self, canvas, parent, coordinates=True)
         self._actions["enableAnnotate"].setCheckable(True)
     def enableAnnotate(self):
         if self.ece is not None:
@@ -80,14 +82,60 @@ class MyNavigationToolbar(NavigationToolbar):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
                                                             "Choose Your DB",
                                                             "",
-                                                            "Database Files (*.db);;All Files (*)",
+                                                            "Database Files (*.db);;CSV Files (*.csv);;All Files (*)",
                                                             options=options)
         if fileName:
             print("File opened " + fileName)
             # print(fileName)
             #passing toolbar to ECE4012 class
             self.ece = ECE4012(self.fig, fileName, self)
+            #self.ece.initializer()
+            fn, file_ext = os.path.splitext(fileName)
+            if file_ext.lower() == ".csv":
+                self.ece.initializer("CSV")
+                self.ece.run()
+            elif file_ext.lower() == ".db":
+                self.ece.initializer("DB")
+                self.ece.run()
+
+    def importCSV(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                            "Choose Your CSV File",
+                                                            "",
+                                                            "CSV Files (*.csv);;All Files (*)",
+                                                            options=options)
+        if fileName:
+            print("File opened " + fileName)
+            # print(fileName)
+            #passing toolbar to ECE4012 class
+            self.ece = ECE4012(self.fig, fileName, self)
+            self.ece.initializer("CSV")
             self.ece.run()
+
+    def importCal(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                            "Choose Your Cal",
+                                                            "",
+                                                            "All Files (*);;CSV Files (*.csv)",
+                                                            options=options)
+        # print(fileName)
+        #if fileName is not None:
+        if fileName:
+            # print("mmm")
+            try:       
+                self.ece.readCalibration(fileName)
+                #self.ece.initializer()
+                self.ece.redrawAfterCalibrate()
+                self.ece.run()
+                #aw=QtWidgets.QMainWindow(self.parent)
+                #aw.setWindowTitle("%s" % "ECE4012 Calibrated")
+                #self.ece.run()
+            except:
+                raise
     def exportCSV(self):
         if self.ece is not None:
             print("nono")
@@ -220,7 +268,7 @@ between qt4 and qt5"""
 qApp = QtWidgets.QApplication(["H"])
 
 aw = ApplicationWindow()
-aw.setWindowTitle("%s" % "ECE4012")
+aw.setWindowTitle("%s" % "PLM Data Analysis Toolkit")
 aw.show()
 sys.exit(qApp.exec_())
 #qApp.exec_()
