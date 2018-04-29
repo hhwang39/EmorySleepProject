@@ -1,0 +1,12 @@
+[Unit]
+Description=Metawear startup service
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/mbientlab/Project/Test1/executestart.sh
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
