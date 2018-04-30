@@ -12,7 +12,15 @@ Develop a small portable device and GUI for Patients with Periodic Limb Movement
 
 Installation Guide
 ------------------
-Not written yet
+All libraries and codes needed to be installed on Raspberry Pi are listed out under installationSteps.txt file.
+
+The main Python code along with calibration setup code needs to be set up under directory /home/pi/mbientlab/Project.
+
+A copy of codes can be found under RaspberryPiCodes. The folders calibration and Test1 should be placed under directory previously specified. 
+
+Inside services folder, the two .service files should be placed under directory /etc/systemd/system of Raspberry Pi 3.
+These services calls files within Project folder that runs main MetaWear connection during boot up.
+
 ## LED Indicator of Raspberry Pi
 RED: Failure to connect \
 BLUE: In process of connecting/reconnecting\
@@ -23,17 +31,17 @@ When a USB drive is plugged to the Raspberry Pi, there are two cases that can ha
 The 3 files transferred to the USB are:\
 excep.log - log file containing lines printed from RPi terminal.\
 data1.db - SQLite file containing the database\
-data1.csv - the same data as data1.db in a csv format\
-#### 1. USB is plugged after completion of the program
+data1.csv - the same data as data1.db in a csv format
+#### 1. USB is plugged in after completion of the program
 1) LED will be off, indicating USB is recognized.
 2) LED turns blue indicating that the Receiver Module is in the process of copying
 3) LED turns green indicating a successful file transfer
-#### 2. USB is plugged during program running
+#### 2. USB is plugged during in as program is running
 1) Program will be terminated
 2) LED will be off, indicating USB is recognized.
 3) LED turns blue indicating that the Receiver Module is in the process of copying
 4) LED turns green indicating a successful file transfer
-#### 2. USB is plugged again after transfer is completed
+#### 2. USB is plugged in again after transfer is completed
 1) LED turns blue indicating that the Receiver Module is in the process of copying
 2) Since there is nothing to copy, the LED will be off
 
