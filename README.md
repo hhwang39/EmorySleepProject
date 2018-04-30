@@ -24,22 +24,18 @@ These services calls files within Project folder that runs main MetaWear connect
 ## LED Indicator of Raspberry Pi 
 
 ### Normal
-----------------
 Normal Mode is active when power is plugged in to Raspberry Pi. 
 
 ### Light Indicator (Normal)
-------------
 RED: Failure to connect \
 BLUE: In process of connecting/reconnecting\
 GREEN: Connected to Metawear device and has received data for at least one cycle
 
 ### Calibration Mode
---------------
 Calibration Mode is active when USB drive contains a blank calibration.txt file inside data folder.
 USB drive must be plugged in to Raspberry Pi 3 during entire process.
 
 ### Light Indicator (Calibration)
-------------
 In Process of Connecting:\
 RED: Failure to connect \
 BLUE: In process of connecting/reconnecting
