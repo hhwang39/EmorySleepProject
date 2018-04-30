@@ -240,7 +240,7 @@ try:
     # Turn off MetaWear at specified battery percentage
     while cycles>0:
         print("cycles %d"%cycles)
-        if voltagelevel < 6:
+        if voltagelevel < 4:
            cycles=1  
         sleep(10.0)
         # After 1 cycle, turn Raspberry Pi LED green to indicate successful connection.
