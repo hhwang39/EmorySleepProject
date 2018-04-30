@@ -1,9 +1,11 @@
+---------------------------------------------
+LINES TO RUN IN TERMINAL
+---------------------------------------------
 sudo apt-get update
 raspi-config localizaztion -> change timezone-> US-> eastern
 sudo apt-get -y upgrade
 reboot
 apt-get install -y python3-pip
-
 
 apt-get install build-essential libssl-dev libffi-dev python-dev
 
@@ -12,22 +14,26 @@ apt-get install libbluetooth-dev
 apt-get install libboost-python-dev
 apt-get install libboost-all-dev
 
-DEPENDS
---------------
+----------------------------------------------
+PYTHON CODE DEPENDS ON THESE SPECIFIC LIBRARIES
+---------------------------------------------
 pkg-config
 libboost-python-dev
 libboost-thread-dev
 libbluetooth-dev >= 4.101
 libglib2.0-dev
 python-dev
-
+-------------------------------------------------
+CONTINUED LINES TO RUN IN TERMINAL
+------------------------------------------------
 mkdir /home/pi/mbientlab
 cd /home/pi/mbientlab
 
 git clone https://github.com/mbientlab/pygattlib/
 cd pygattlib/
 make
-if fail copy from stagecd
+if "make" fails, copy from stagecd
+otherwise,
  cd src
   touch *
   cd bluez
@@ -45,13 +51,18 @@ python scan_connect.py
 apt-get install sqlite
 apt-get install sqlitebrowser
 
-cp Test1 directory using scp
+pip install pandas
 
+copy Test1 directory using SCP protocol such as WinSCP.
 
+-------------------------------------
+CRONTAB GUIDE
+-------------------------------------
 http://awc.com.my/uploadnew/5ffbd639c5e6eccea359cb1453a02bed_Setting%20Up%20Cron%20Job%20Using%20crontab.pdf
 
-NO USED
------------
+----------------------------------------------------------------------------------
+DO NOT RUN THESE LINES (WILL NOT WORK FOR PYTHON SDK, PYTHON 3.0 IS NOT REQUIRED)
+----------------------------------------------------------------------------------
 pip3 download gattlib
 tar xvzf ./gattlib-0.20150805.tar.gz
 cd gattlib-0.20150805/
