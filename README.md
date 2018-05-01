@@ -59,7 +59,10 @@ When a USB drive is plugged in to the Raspberry Pi, there are three cases that c
 The 3 files transferred to the USB are:\
 excep.log - log file containing lines printed from RPi terminal.\
 data1.db - SQLite file containing the database\
-data1.csv - the same data as data1.db in a csv format
+data1.csv - the same data as data1.db in a csv format\
+
+Besides these files, a backup folder is created as well within Test1 folder called "backup"\
+where backup of data1.db file is stored.
 #### 1. USB is plugged in after completion of the program
 1) LED will be off, indicating USB is recognized.
 2) LED turns blue indicating that the Receiver Module is in the process of copying
