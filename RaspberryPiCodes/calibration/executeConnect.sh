@@ -50,7 +50,7 @@ do
 #INITTIME=`echo $DATEFROMFILE|awk '{print $2}'`
 #INITDATE=`echo $DATEFROMFILE|awk '{print $1}'`
 #string2=$(/bin/date -d "${INITDATE}+7 days" +"%D")" $INITTIME"
-DEVICEADDR=`head -1 $DEVICEFILE`
+DEVICEADDR=`head -1 $DEVICEFILE|sed -e s///`
 
 # StartDate=$(/bin/date -u -d "$string1" +"%s")
 # FinalDate=$(/bin/date -u -d "$string2" +"%s")

@@ -53,7 +53,7 @@ string2=$(/bin/date -d "${INITDATE}+7 days" +"%D")" $INITTIME"
 
  StartDate=$(/bin/date -u -d "$string1" +"%s")
  FinalDate=$(/bin/date -u -d "$string2" +"%s")
- DEVICEADDR=`head -1 $DEVICEFILE`
+ DEVICEADDR=`head -1 $DEVICEFILE|sed -e s///`
  diffl=`/usr/bin/expr $FinalDate - $StartDate`
  if [ $diffl -gt 0 ];then
  diff2=`/usr/bin/expr $diffl / 10 `
